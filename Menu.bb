@@ -551,7 +551,7 @@ Function UpdateMainMenu()
 				
 				
 				;[End Block]
-			Case 3,5,6,7 ;options
+			Case 3,5,6,7,8 ;options
 				;[Block]
 				
 				x = 159 * MenuScale
@@ -566,7 +566,7 @@ Function UpdateMainMenu()
 				
 				x = 160 * MenuScale
 				y = y + height + 20 * MenuScale
-				width = 580 * MenuScale
+				width = 840 * MenuScale
 				height = 60 * MenuScale
 				DrawFrame(x, y, width, height)
 				
@@ -579,6 +579,8 @@ Function UpdateMainMenu()
 					Rect(x+295*MenuScale,y+10*MenuScale,(width/5)+10*MenuScale,(height/2)+10*MenuScale,True)
 				ElseIf MainMenuTab = 7
 					Rect(x+435*MenuScale,y+10*MenuScale,(width/5)+10*MenuScale,(height/2)+10*MenuScale,True)
+				ElseIf MainMenuTab = 8
+					Rect(x+575*MenuScale,y+10*MenuScale,(width/5)+10*MenuScale,(height/2)+10*MenuScale,True)
 				EndIf
 				
 				Color 255,255,255
@@ -586,6 +588,7 @@ Function UpdateMainMenu()
 				If DrawButton(x+160*MenuScale,y+15*MenuScale,width/5,height/2, "AUDIO", False) Then MainMenuTab = 5
 				If DrawButton(x+300*MenuScale,y+15*MenuScale,width/5,height/2, "CONTROLS", False) Then MainMenuTab = 6
 				If DrawButton(x+440*MenuScale,y+15*MenuScale,width/5,height/2, "ADVANCED", False) Then MainMenuTab = 7
+				If DrawButton(x+580*MenuScale,y+15*MenuScale,width/5,height/2, "TWITCH", False) Then MainMenuTab = 8
 				
 				AASetFont Font1
 				y = y + 70 * MenuScale
@@ -1019,6 +1022,36 @@ Function UpdateMainMenu()
 						DrawOptionsTooltip(tx,ty,tw,th,"antialiastext")
 					EndIf
 					;[End Block]
+				ElseIf MainMenuTab = 8
+					height = 320 * MenuScale
+					DrawFrame(x, y, width, height)	
+					
+					y = y + 20*MenuScale
+					
+					Color 255,255,255				
+					AAText(x + 20 * MenuScale, y, "Enable Twitch Chaos:")	
+					EnableTwitchIntegration = DrawTick(x + 310 * MenuScale, y + MenuScale, EnableTwitchIntegration)
+					If MouseOn(x+310*MenuScale,y+MenuScale,20*MenuScale,20*MenuScale)
+						DrawOptionsTooltip(tx,ty,tw,th,"twitch")
+					EndIf
+
+					y=y+50*MenuScale
+					
+					Color 255,255,255
+					AAText(x + 20 * MenuScale, y, "Max Chaos Event Cycle:")
+					TwitchMaxEvents = Slider5(x+310*MenuScale,y+6*MenuScale,150*MenuScale,TwitchMaxEvents,1,"1","2","3","4","5")
+					If (MouseOn(x+310*MenuScale,y-6*MenuScale,150*MenuScale+14,20) And OnSliderID=0) Or OnSliderID=1
+						DrawOptionsTooltip(tx,ty,tw,th+100*MenuScale,"twitchmaxevent")
+					EndIf
+
+					y = y + 50*MenuScale
+					
+					TwitchMaxEventTime = Int(SlideBar(x + 310*MenuScale, y-4*MenuScale, 150*MenuScale, (TwitchMaxEventTime * 100.0) / 100.0))
+					Color(255, 255, 255)
+					AAText(x + 20 * MenuScale, y, "Time to start a new Twitch Vote:")
+					If MouseOn(x+310*MenuScale,y-4*MenuScale,150*MenuScale+14,20)
+						DrawOptionsTooltip(tx,ty,tw,th,"twitcheventtime",TwitchMaxEventTime)
+					EndIf
 				EndIf
 				;[End Block]
 			Case 4 ; load map
@@ -2135,6 +2168,16 @@ Function DrawOptionsTooltip(x%,y%,width%,height%,option$,value#=0,ingame%=False)
 			;[Block]
 		Case "hud"
 			txt = "Display the blink and stamina meters."
+		Case "twitch"
+			txt = "Enables the Twitch integration client. Will need server running for it to connect successfully."
+		Case "twitchmaxevent"
+			txt = "Determines how many events can be active at a time between each new voting cycle. This is done is by multiplying this setting number by the new vote time."
+		case "twitcheventtime"
+			txt = "This is the time for the client to send a response to the server and initiate a trigger for a new vote to happen."
+			R = 255
+			G = 255
+			B = 255
+			txt2 = "Current value: "+TwitchMaxEventTime+" seconds (default is 45 seconds)"
 		Case "consoleenable"
 			txt = "Toggles the use of the developer console. Can be used in-game by pressing " + KeyName(KEY_CONSOLE) + "."
 		Case "consoleerror"
